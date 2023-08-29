@@ -1,10 +1,13 @@
 import cv2
 import numpy as np
 import os
-import time
-import math
 
-size = 5
+global size
+size = 0
+
+
+def nothing(x):
+    pass
 
 
 def closest_image(img_list, base_cut):
@@ -21,18 +24,15 @@ def closest_image(img_list, base_cut):
         G = np.sum(np.square(G))
         R = np.sum(np.square(R))
         overall = B + G + R
-        #print(B.dtype, B)
         if not isinstance(overall_comp, np.intc):
-            #print(overall)
             overall_comp = overall
-            print(type(overall_comp))
             ideal = img_list[i]
         else:
             if overall_comp > overall:
-                print(overall)
                 overall_comp = overall
                 ideal = img_list[i]
     return ideal
+
 
 def get_images(folder):
     img_name_list = os.listdir(folder)
@@ -46,21 +46,50 @@ def get_images(folder):
 
 
 def run():
-    img_list = get_images("src")
-    base_img = cv2.imread("src/base.jpg")
-    cv2.imshow("window", base_img)
-    print(type(base_img))
-    for x in range(base_img.shape[0] // size):
-        for y in range(base_img.shape[1] // size):
-            base_cut = base_img[x * size: (x + 1) * size,
-                              y * size: (y + 1) * size]
-            ideal = closest_image(img_list, base_cut)
-            base_img[x * size: (x + 1) * size,
-            y * size: (y + 1) * size] = ideal
-            cv2.imshow("cut", base_img)
-            cv2.waitKey(1)
-            #print(x, y)
-            #time.sleep(0.01)
+    cv2.namedWindow("image")
+    cv2.createTrackbar('Patch size', 'image', 5, 50, nothing)
+    cv2.createTrackbar('Start', 'image', 0, 1, nothing)
+
+    base_img = cv2.imread("base1.jpg")
+    edited = base_img.copy()
+
+    finished = 0
+    while 1:
+        res = cv2.hconcat(base_img, edited)
+        cv2.imshow("image", edited)
+        global size
+        size = cv2.getTrackbarPos('Patch size', 'image')
+        start = cv2.getTrackbarPos('Start', 'image')
+        if start and not finished:
+            print(size)
+            img_list = get_images("src")
+            for x in range(base_img.shape[0] // size):
+                if finished:
+                    break
+                for y in range(base_img.shape[1] // size):
+                    start = cv2.getTrackbarPos('Start', 'image')
+                    if not start:
+                        finished = 1
+                        edited = base_img.copy()
+                    if finished:
+                        break
+                    base_cut = base_img[x * size: (x + 1) * size,
+                               y * size: (y + 1) * size]
+                    ideal = closest_image(img_list, base_cut)
+                    edited[x * size: (x + 1) * size,
+                    y * size: (y + 1) * size] = ideal
+                    cv2.imshow("image", edited)
+                    if cv2.waitKey(1) == "q":
+                        break
+                    print(x, y)
+            finished = 1
+        elif not start and finished:
+            finished = 0
+
+        if cv2.waitKey(1) == "q":
+            break
+
+
 
     print("done")
     cv2.imshow("window", base_img)
