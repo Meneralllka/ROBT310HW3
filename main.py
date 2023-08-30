@@ -1,3 +1,15 @@
+'''
+1 (65%) - main task accomplishment -- DONE
+2 (5%) - for development of personal image database for creating the mosaic -- DONE
+3 (5%) - for implementation of a different shape (circular, parallelogram, etc…)
+4 (5%) - awarded if the size of a patch is adjustable -- DONE
+5 (10%) For questions 1‐4, create a document consisting of your inputs, outputs, your observations,
+problems you have faced, solutions indicating how you have overcome the problems, and other points
+that you think are necessary.
+6 (10%) For questions 1‐5, create a video describing your solutions.
+'''
+
+
 import cv2
 import numpy as np
 import os
@@ -50,7 +62,7 @@ def run():
     cv2.createTrackbar('Patch size', 'image', 5, 50, nothing)
     cv2.createTrackbar('Start', 'image', 0, 1, nothing)
 
-    base_img = cv2.imread("base1.jpg")
+    base_img = cv2.imread("base.jpeg")
     edited = base_img.copy()
 
     finished = 0
@@ -62,7 +74,7 @@ def run():
         start = cv2.getTrackbarPos('Start', 'image')
         if start and not finished:
             print(size)
-            img_list = get_images("src")
+            img_list = get_images("dataset")
             for x in range(base_img.shape[0] // size):
                 if finished:
                     break
