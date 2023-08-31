@@ -56,10 +56,31 @@ def get_images(folder):
         img_list.append(img)
     return img_list
 
+def get_par_kernel(size):
+    blank = np.zeros((500, 500, 3), dtype=np.uint8)
+    cv2.line(blank, (0, 499), (249, 0), (255, 255, 255), 1)
+    cv2.line(blank, (249, 499), (499, 0), (255, 255, 255), 1)
+    gray = cv2.cvtColor(blank, cv2.COLOR_BGR2GRAY)
+    for y in range(498):
+        white = 0
+        prev = gray[y][0]
+        for x in range(1, 500):
+            if gray[y][x] == 255 and prev != 255:
+                white += 1
+            prev = gray[y][x]
+            if white == 1:
+                gray[y][x] = 255
+    for y in range(498, 500):
+        for x in range(1, 250):
+            gray[y][x] = 255
+    gray = cv2.resize(gray, (size, size))
+    return gray
+
 
 def run():
     cv2.namedWindow("image")
     cv2.createTrackbar('Patch size', 'image', 5, 50, nothing)
+    cv2.createTrackbar('Shape', 'image', 0, 1, nothing)
     cv2.createTrackbar('Start', 'image', 0, 1, nothing)
 
     base_img = cv2.imread("base.jpeg")
@@ -67,15 +88,15 @@ def run():
 
     finished = 0
     while 1:
-        res = cv2.hconcat(base_img, edited)
         cv2.imshow("image", edited)
         global size
         size = cv2.getTrackbarPos('Patch size', 'image')
+        shape = cv2.getTrackbarPos('Shape', 'image')
         start = cv2.getTrackbarPos('Start', 'image')
         if start and not finished:
-            print(size)
             img_list = get_images("dataset")
             for x in range(base_img.shape[0] // size):
+                print(x, "out of", base_img.shape[0] // size)
                 if finished:
                     break
                 for y in range(base_img.shape[1] // size):
@@ -93,7 +114,12 @@ def run():
                     cv2.imshow("image", edited)
                     if cv2.waitKey(1) == "q":
                         break
-                    print(x, y)
+                    #print(x, y)
+            cv2.imwrite("edited.jpg", edited)
+            dst = cv2.addWeighted(base_img, 0.3, edited, 0.7, 0)
+            cv2.imshow('image', dst)
+            cv2.imwrite("result.jpg", dst)
+            print("done")
             finished = 1
         elif not start and finished:
             finished = 0
@@ -101,10 +127,6 @@ def run():
         if cv2.waitKey(1) == "q":
             break
 
-
-
-    print("done")
-    cv2.imshow("window", base_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
