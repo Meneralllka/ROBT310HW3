@@ -155,19 +155,19 @@ def run():
                             break
                         try:
                             if (y == 0):
-                                base_cut = base_img[(x * size): ((x + 1) * size),
-                                           y * size: (y + 1) * size]
-                                ideal = closest_image_par(img_list, base_cut, mask)
-                                edited[x * size: (x + 1) * size,
-                                y * size: (y + 1) * size] = ideal
-                            else:
-                                base_cut = base_img[(x * size): ((x + 1) * size),
-                                           y * (size//2): (y + 2) * (size//2)]
-                                ideal = closest_image_par(img_list, base_cut, mask)
-                                edited[x * size: (x + 1) * size,
-                                y * (size//2): (y + 2) * (size//2)] = cv2.add(edited[x * size: (x + 1) * size,
-                                y * (size//2): (y + 2) * (size//2)], ideal)
-
+                                base_cut = base_img[(x * size): ((x + 1) * size),#line
+                                           y * size: (y + 1) * size]#line
+                                ideal = closest_image_par(img_list, base_cut, mask)#line
+                                edited[x * size: (x + 1) * size,#line
+                                y * size: (y + 1) * size] = ideal#line
+                            else:#line
+                                base_cut = base_img[(x * size): ((x + 1) * size),#line
+                                           y * (size//2): (y + 2) * (size//2)]#line
+                                ideal = closest_image_par(img_list, base_cut, mask)#line
+                                edited[x * size: (x + 1) * size,#line
+                                y * (size//2): (y + 2) * (size//2)] = cv2.add(edited[x * size: (x + 1) * size,#line
+                                y * (size//2): (y + 2) * (size//2)], ideal)#line
+#line
                             cv2.imshow("image", edited)
                             if cv2.waitKey(1) == "q":
                                 break
