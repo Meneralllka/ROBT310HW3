@@ -2,7 +2,7 @@ import cv2
 
 cap = cv2.VideoCapture("dataset.mp4")
 cnt = 0
-
+print("vasya")
 while 1:
     ret, frame = cap.read()
     if ret:
